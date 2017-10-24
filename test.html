@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>datatables-test</title>
+    <link rel="stylesheet" type="text/css" href="dataTables.semanticui.min.css">
+    <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="semantic/dist/semantic.min.js"></script>
+    <script src="jquery.dataTables.min.js"></script>
+    <script src="dataTables.semanticui.min.js"></script>
+    <script>
+$(document).ready(function(){
+  var table = $('#table').DataTable({
+  //processing:true,
+  searching:true,
+  serverSide:true,
+  search: {
+    "regex":true
+  },
+  ajax: {
+         url: "/cgi-bin/gethosts_new.py",
+         data: function ( data ) {
+               return { 'json': JSON.stringify( data )};
+        }
+      },
+  columns: [
+    {
+      className:      'details-control',
+      orderable:      false,
+      data:           null,
+      defaultContent: ''
+    },
+    { data: "hostName" },
+    { data: "ipAddress" },
+    { data: "lastCheck" },
+    { data: "lastStateChange" },
+    { data: "hostState"}
+  ],
+  order: [[3, 'asc']]
+  });
+
+  $('#table tbody').on('click', 'td.details-control', function () {
+    var tr = $(this).closest('tr');
+    var row = table.row( tr );
+
+    if ( row.child.isShown() ) {
+        row.child.hide();
+        tr.removeClass('shown');
+    }
+    else {
+        row.child( format(row.data()) ).show();
+        tr.addClass('shown');
+    }
+  } );
+
+  function format( rowData ) {
+    var div = $('<div/>')
+        .addClass( 'loading' )
+        .text( 'Loading...' );
+
+    $.ajax( {
+        url: '/cgi-bin/gethost.py',
+        data: {
+            hostName: rowData.hostName
+        },
+        //dataType: 'json',
+        success: function ( data ) {
+            div
+                .html( data )
+                .removeClass( 'loading' )
+                .addClass('ui raised segment');
+        }
+    } );
+
+    return div;
+}
+
+  function reloadTable(){
+  table.ajax.reload(null,false);
+  }
+
+  $('#autoRefresh').on('click',function(){
+  if ($(this).is(':checked') == true){
+         timer = setInterval(function(){reloadTable()}, 30000 );
+  } else {
+  clearInterval(timer)
+  }
+
+  });
+
+  $('#getBtn').click(function(){
+  reloadTable();
+  });
+  $(document).ajaxStart(function(){
+  $('#loading-image').show();
+  });
+    $(document).ajaxStop(function(){
+  $('#loading-image').hide();
+  $('#table tr td:contains("DOWN")').parent().addClass("error");
+  //$('#table tr td:contains("UP")').parent().addClass("positive");
+
+  });
+});
+
+    </script>
+</head>
+<body>
+<div class="ui grid">
+    <div class ="two wide column"></div>
+    <div class="twelve wide column"><p></p>
+        <h3 class="ui blue header">Icinga2 Hosts State</h3>
+    <div class ="two wide column"></div>
+    <div class ="two wide column"></div>
+        <div class="twelve wide column">
+            <div class="ui labeled icon blue button" id = "getBtn">
+                <i class="repeat icon"></i> Get
+          </div>
+          <div class="ui slider checkbox">
+          <input type="checkbox" id = "autoRefresh" name = "autoRefresh">
+              <label>Auto Refresh</label>
+        </div>
+        <div class="ui active inline loader" id="loading-image"></div>
+        </div><br />
+    <div class ="two wide column"></div>
+    <div class="twelve wide column">
+        <table id="table" class="ui celled blue selectable table" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th></th>
+                <th>IP Address</th>
+                <th>Hostname</th>
+                <th>Last Check</th>
+                <th>Last State Change</th>
+                <th>State</th>
+            </tr>
+        </thead>
+
+</table>
+    </div>
+    <div class="two wide column"></div>
+</div>
+</body>
+</html>
