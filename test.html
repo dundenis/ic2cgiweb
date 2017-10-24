@@ -15,6 +15,7 @@ $(document).ready(function(){
   //processing:true,
   searching:true,
   serverSide:true,
+  lengthMenu: [10,15,20,25,30,50,100],
   search: {
     "regex":true
   },
@@ -29,7 +30,7 @@ $(document).ready(function(){
       className:      'details-control',
       orderable:      false,
       data:           null,
-      defaultContent: ''
+      defaultContent: '<i class="plus square icon"></i>'
     },
     { data: "hostName" },
     { data: "ipAddress" },
@@ -37,20 +38,23 @@ $(document).ready(function(){
     { data: "lastStateChange" },
     { data: "hostState"}
   ],
-  order: [[3, 'asc']]
+  order: [[4, 'desc']]
   });
 
   $('#table tbody').on('click', 'td.details-control', function () {
     var tr = $(this).closest('tr');
+var td = $(this).closest('tr td.details-control');
     var row = table.row( tr );
 
     if ( row.child.isShown() ) {
         row.child.hide();
         tr.removeClass('shown');
+td.html('<i class = "plus square icon"></i>');
     }
     else {
         row.child( format(row.data()) ).show();
         tr.addClass('shown');
+        td.html('<i class = "minus square icon"></i>');
     }
   } );
 
@@ -69,7 +73,7 @@ $(document).ready(function(){
             div
                 .html( data )
                 .removeClass( 'loading' )
-                .addClass('ui raised segment');
+               //.addClass('ui segment');
         }
     } );
 
@@ -97,8 +101,9 @@ $(document).ready(function(){
   });
     $(document).ajaxStop(function(){
   $('#loading-image').hide();
-  $('#table tr td:contains("DOWN")').parent().addClass("error");
-  //$('#table tr td:contains("UP")').parent().addClass("positive");
+  $('#table tr td:contains("DOWN")').addClass("error");
+//$('#table tr td.details-control').html('<i class = "plus square outline icon"></i>');
+  $('#table tr td:contains("UP")').addClass("positive");
 
   });
 });
@@ -109,22 +114,39 @@ $(document).ready(function(){
 <div class="ui grid">
     <div class ="two wide column"></div>
     <div class="twelve wide column"><p></p>
-        <h3 class="ui blue header">Icinga2 Hosts State</h3>
+
     <div class ="two wide column"></div>
     <div class ="two wide column"></div>
         <div class="twelve wide column">
-            <div class="ui labeled icon blue button" id = "getBtn">
-                <i class="repeat icon"></i> Get
+          <div class="ui text menu">
+            <div class="item">
+              <h3 class="ui blue header">
+  <i class="pie chart icon"></i>
+  <div class="content">
+    icinga2
+    <div class="sub header">hosts monitoring</div>
+  </div>
+</h3>
+            </div>
+            <div class="item">
+            <div class="ui labeled icon button" id = "getBtn">
+                <i class="repeat icon"></i> get
           </div>
+        </div>
+        <div class="item">
           <div class="ui slider checkbox">
           <input type="checkbox" id = "autoRefresh" name = "autoRefresh">
-              <label>Auto Refresh</label>
+              <label>auto refresh</label>
         </div>
-        <div class="ui active inline loader" id="loading-image"></div>
-        </div><br />
+      </div>
+      <div class="item">
+        <div class="ui active tiny inline loader" id="loading-image"></div>
+      </div>
+    </div><p></p>
+      </div>
     <div class ="two wide column"></div>
     <div class="twelve wide column">
-        <table id="table" class="ui celled blue selectable table" cellspacing="0" width="100%">
+        <table id="table" class="ui very basic selectable compact small table" cellspacing="0" width="100%">
         <thead>
             <tr>
                 <th></th>

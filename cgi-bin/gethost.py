@@ -124,21 +124,27 @@ def main():
  #   else:
 
     body = """
-      <div class="ui segments">
-  <div class="ui segment">
-    <p>Top</p>
+      <div class="ui celled list">
+  <div class="item">
+    
+    <div class="content">
+      <div class="header">Snickerdoodle</div>
+      An excellent companion
+    </div>
   </div>
-  <div class="ui segment">
-    <p>Middle</p>
+  <div class="item">
+    
+    <div class="content">
+      <div class="header">Poodle</div>
+      A poodle, its pretty basic
+    </div>
   </div>
-  <div class="ui segment">
-    <p>Middle</p>
-  </div>
-  <div class="ui segment">
-    <p>Middle</p>
-  </div>
-  <div class="ui segment">
-    <p>Bottom</p>
+  <div class="item">
+    
+    <div class="content">
+      <div class="header">Paulo</div>
+      He's also a dog
+    </div>
   </div>
 </div>"""
     print("Status: 200 OK")

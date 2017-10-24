@@ -72,8 +72,8 @@ class hosts():
         else:
             host_state = "DOWN"
 
-        for time in host_time:
-            host_time[time] = datetime.fromtimestamp(host_time[time]).strftime('%Y-%m-%d %H:%M:%S')
+        #for time in host_time:
+        #    host_time[time] = datetime.fromtimestamp(host_time[time]).strftime('%Y-%m-%d %H:%M:%S')
 
         return {'hostName': str(hostname),
                 'ipAddress': str(host_address),
@@ -112,7 +112,13 @@ class hosts():
         data = []
         for host in self.list[start:end]:
             data.append(host)
+        for row in range(len(data)):
+            lcheck = float(data[row]['lastCheck'])
+            lschange = float(data[row]['lastStateChange'])
+            data[row]['lastCheck'] = datetime.fromtimestamp(lcheck).strftime('%Y-%m-%d %H:%M:%S')
+            data[row]['lastStateChange'] = datetime.fromtimestamp(lschange).strftime('%Y-%m-%d %H:%M:%S')
         self.result.update({"data": data})
+
 
     def get_total_rows(self):
         self.total_rows = len(self.list)
